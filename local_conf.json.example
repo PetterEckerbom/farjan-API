@@ -1,3 +1,29 @@
 {
-    "APIKey": "KeyHere"
+    "TrafikAPIKey": "Trafikverket API key here",
+    "BingAPIKey": "Bing API key here",
+    "wayPoints": [
+        {
+            "RouteName": "Vaxholmsleden",
+            "Harbour": "Vaxholm",
+            "Longitude": 59.400217,
+            "Latitude": 18.349889
+        },
+        {
+            "RouteName": "Vaxholmsleden",
+            "Harbour": "Rindö",
+            "Longitude": 59.403613,
+            "Latitude": 18.364755
+        },{
+            "RouteName": "Oxdjupsleden",
+            "Harbour": "Rindö",
+            "Longitude": 59.395636,
+            "Latitude": 18.440638
+        },
+        {
+            "RouteName": "Oxdjupsleden",
+            "Harbour": "Värmdö",
+            "Longitude": 59.396494,
+            "Latitude": 18.449018
+        }
+    ]
 }
