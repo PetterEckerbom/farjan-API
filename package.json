@@ -1,0 +1,19 @@
+{
+  "name": "farjan-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PetterEckerbom/farjan-API.git"
+  },
+  "author": "Petter Eckerbm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PetterEckerbom/farjan-API/issues"
+  },
+  "homepage": "https://github.com/PetterEckerbom/farjan-API#readme"
+}
