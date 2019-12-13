@@ -1,9 +1,17 @@
 const express = require("express");
-const app = express();
 const axios = require("axios");
 const { map } = require("ramda");
 
+const log = console.log;
+const app = express();
+
 const localConf = require("./local_conf.json");
+
+//Global mutatable data below, spooky
+var vaxhomRindo = [];
+var rindoVaxholm = [];
+var rindoVarmdo = [];
+var varmdoRindo = [];
 
 const getDepartures = async ({ limit = 200, routeName, harbour }) => {
   const requestBody = `
@@ -44,6 +52,31 @@ app.get("/RindoVaxholm", async (req, res) => {
   );
 });
 
-app.listen(3000, () => {
-  console.log("App started on port 3000");
+app.listen(3000, async () => {
+    syncToApi();
+    const syncInterval = setInterval(syncToApi, 3600000)
 });
+
+const syncToApi = async () => {
+    log("Sync for Vaxholm to Rindö started");
+    vaxhomRindo = toEpoch(
+      await getDepartures({ routeName: "VaxholmsLeden", harbour: "Vaxholm" })
+    );
+
+    log("Sync for Rindö to Vaxholm");
+    rindoVaxholm = toEpoch(
+      await getDepartures({ routeName: "VaxholmsLeden", harbour: "Rindö" })
+    );
+
+    log("Sync for Rindö to Värmdö");
+    rindoVarmdo = toEpoch(
+      await getDepartures({ routeName: "Oxdjupsleden", harbour: "Rindö" })
+    );
+
+    log("Sync for Rindö to Värmdö");
+    varmdoRindo = toEpoch(
+      await getDepartures({ routeName: "Oxdjupsleden", harbour: "Värmdö" })
+    );
+
+    log('Finished sync');
+}
