@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-const { map, filter } = require("ramda");
+const { map, filter, slice } = require("ramda");
 
 const log = console.log;
 const app = express();
@@ -64,8 +64,8 @@ const findNext = (timestamp, limit = 1, list) => {
   if (timestamp) {
     if (timestamp !== NaN) {
       const comingUp = filter(x => x > timestamp)(list);
-      const requested = slice(0, limit - 1)(comingUp);
-      if (next) {
+      const requested = slice(0, limit)(comingUp);
+      if (requested) {
         return { code: 200, result: requested };
       } else {
         return {
