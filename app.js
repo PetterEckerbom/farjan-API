@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-const { map, find } = require("ramda");
+const { map, filter } = require("ramda");
 
 const log = console.log;
 const app = express();
@@ -20,24 +20,39 @@ app.get("/", (req, res) => {
   res.send("Future landingpage");
 });
 
-app.post("/vaxholm-rindo/next", (req, res) => {
-  const next = findNext(Number(req.body.timestamp), vaxhomRindo);
+app.post("/vaxholm-rindo/next/:id", (req, res) => {
+  const next = findNext(Number(req.body.timestamp), req.params.id, vaxhomRindo);
   res.status(next.code).send(next.result);
 });
 
-app.post("/rindo-vaxholm/next", (req, res) => {
-  const next = findNext(Number(req.body.timestamp), rindoVaxholm);
+app.post("/rindo-vaxholm/next/:id", (req, res) => {
+  const next = findNext(
+    Number(req.body.timestamp),
+    req.params.id,
+    rindoVaxholm
+  );
   res.status(next.code).send(next.result);
 });
 
-app.post("/rindo-varmdo/next", (req, res) => {
-  const next = findNext(Number(req.body.timestamp), rindoVarmdo);
+app.post("/rindo-varmdo/next/:id", (req, res) => {
+  const next = findNext(Number(req.body.timestamp), req.params.id, rindoVarmdo);
   res.status(next.code).send(next.result);
 });
 
-app.post("/varmdo-rindo/next", (req, res) => {
-  const next = findNext(Number(req.body.timestamp), varmdoRindo);
+app.post("/varmdo-rindo/next/:id", (req, res) => {
+  const next = findNext(Number(req.body.timestamp), req.params.id, varmdoRindo);
   res.status(next.code).send(next.result);
+});
+
+app.post("/time-to-dest", async (req, res) => {
+  const { longitude, latitude, route, harbour } = req.body;
+  const start = `${longitude},${latitude}`;
+  const allHarbourData = JSON.parse(localConf.wayPoints);
+  const harbourData = find(x => x.route === route && x.harbour == harbour)(
+    allHarbourData
+  );
+  const finish = `${harbourData.Longitude},${harbourData.Latitude}`;
+  res.send(await getTravelTime(start, finish));
 });
 
 app.listen(3000, async () => {
@@ -45,20 +60,24 @@ app.listen(3000, async () => {
   const syncInterval = setInterval(syncToApi, 3600000);
 });
 
-const findNext = (timestamp, list) => {
+const findNext = (timestamp, limit = 1, list) => {
   if (timestamp) {
     if (timestamp !== NaN) {
-      const next = find(x => x > req.body.timeStamp)(list);
+      const comingUp = filter(x => x > timestamp)(list);
+      const requested = slice(0, limit - 1)(comingUp);
       if (next) {
-        return { code: 200, result: next };
+        return { code: 200, result: requested };
       } else {
-        return { code: 404, result: "Couldnt find mathcing departure" };
+        return {
+          code: 404,
+          result: { error: "Couldnt find mathcing departure" }
+        };
       }
     } else {
-      return { code: 400, result: "Timestamp needs to be a number" };
+      return { code: 400, result: { error: "Timestamp needs to be a number" } };
     }
   } else {
-    return { code: 400, result: "Timestamp needs to exsist" };
+    return { code: 400, result: { error: "Timestamp needs to exsist" } };
   }
 };
 
